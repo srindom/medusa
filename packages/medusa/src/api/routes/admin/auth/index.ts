@@ -1,8 +1,14 @@
 import { Router } from "express"
-import { User } from "../../../.."
 import middlewares from "../../../middlewares"
 
 const route = Router()
+
+type User = {
+  id: string
+  name: string
+  email: string
+  password_hash: string
+}
 
 export default (app) => {
   app.use("/auth", route)

@@ -1,5 +1,5 @@
 import { IsEmail } from "class-validator"
-import UserService from "../../../../services/user"
+import { UserService } from "../../../../interfaces"
 import { validator } from "../../../../utils/validator"
 import { EntityManager } from "typeorm"
 

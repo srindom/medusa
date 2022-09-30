@@ -1,10 +1,23 @@
 import Scrypt from "scrypt-kdf"
 import { AuthenticateResult } from "../types/auth"
-import { User, Customer } from "../models"
+import { Customer } from "../models"
 import { TransactionBaseService } from "../interfaces"
-import UserService from "./user"
 import CustomerService from "./customer"
 import { EntityManager } from "typeorm"
+
+type User = {
+  id: string
+  name: string
+  email: string
+  password_hash: string
+}
+
+interface UserService {
+  withTransaction: (transaction: EntityManager) => UserService
+  retrieve: (id: string, config?: unknown) => Promise<User>
+  retrieveByApiToken: (apiToken: string, config?: unknown) => Promise<User>
+  retrieveByEmail: (email: string, config?: unknown) => Promise<User>
+}
 
 type InjectedDependencies = {
   manager: EntityManager

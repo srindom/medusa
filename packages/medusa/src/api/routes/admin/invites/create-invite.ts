@@ -1,9 +1,14 @@
 import { IsEmail, IsEnum } from "class-validator"
 
 import InviteService from "../../../../services/invite"
-import { UserRoles } from "../../../../models/user"
 import { validator } from "../../../../utils/validator"
 import { EntityManager } from "typeorm"
+
+enum UserRoles {
+  ADMIN = "admin",
+  MEMBER = "member",
+  DEVELOPER = "developer",
+}
 
 /**
  * @oas [post] /invites

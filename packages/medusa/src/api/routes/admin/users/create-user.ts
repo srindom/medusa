@@ -1,10 +1,15 @@
 import { IsEmail, IsEnum, IsOptional, IsString } from "class-validator"
 
-import { UserRoles } from "../../../../models/user"
-import UserService from "../../../../services/user"
+import { UserService } from "../../../../interfaces"
 import _ from "lodash"
 import { validator } from "../../../../utils/validator"
 import { EntityManager } from "typeorm"
+
+enum UserRoles {
+  ADMIN = "admin",
+  MEMBER = "member",
+  DEVELOPER = "developer",
+}
 
 /**
  * @oas [post] /users

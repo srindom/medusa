@@ -1,5 +1,5 @@
 import { EntityManager } from "typeorm"
-import UserService from "../../../../services/user"
+import { UserService } from "../../../../interfaces"
 
 /**
  * @oas [delete] /users/{id}

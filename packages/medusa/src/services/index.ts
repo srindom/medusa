@@ -41,4 +41,3 @@ export { default as SystemPaymentProviderService } from "./system-payment-provid
 export { default as TaxProviderService } from "./tax-provider"
 export { default as TaxRateService } from "./tax-rate"
 export { default as TotalsService } from "./totals"
-export { default as UserService } from "./user"

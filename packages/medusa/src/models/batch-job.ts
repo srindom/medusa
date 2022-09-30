@@ -1,11 +1,4 @@
-import {
-  AfterLoad,
-  BeforeInsert,
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-} from "typeorm"
+import { AfterLoad, BeforeInsert, Column, Entity } from "typeorm"
 import {
   BatchJobResultError,
   BatchJobResultStatDescriptor,
@@ -14,7 +7,6 @@ import {
 import { DbAwareColumn, resolveDbType } from "../utils/db-aware-column"
 
 import { SoftDeletableEntity } from "../interfaces/models/soft-deletable-entity"
-import { User } from "./user"
 import { generateEntityId } from "../utils/generate-entity-id"
 
 @Entity()
@@ -22,12 +14,8 @@ export class BatchJob extends SoftDeletableEntity {
   @DbAwareColumn({ type: "text" })
   type: string
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   created_by: string | null
-
-  @ManyToOne(() => User)
-  @JoinColumn({ name: "created_by" })
-  created_by_user: User
 
   @DbAwareColumn({ type: "jsonb", nullable: true })
   context: Record<string, unknown>

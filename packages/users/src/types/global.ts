@@ -2,30 +2,6 @@ import { AwilixContainer } from "awilix"
 import { Request } from "express"
 import { LoggerOptions } from "typeorm"
 import { Logger as _Logger } from "winston"
-import { Customer } from "../models"
-import { FindConfig, RequestQueryFields } from "./common"
-
-type User = {
-  id: string
-  name: string
-  email: string
-}
-
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace Express {
-    interface Request {
-      user?: (User | Customer) & { customer_id?: string; userId?: string }
-      scope: MedusaContainer
-      validatedQuery: RequestQueryFields & Record<string, unknown>
-      validatedBody: unknown
-      listConfig: FindConfig<unknown>
-      retrieveConfig: FindConfig<unknown>
-      filterableFields: Record<string, unknown>
-      errors: string[]
-    }
-  }
-}
 
 export type ExtendedRequest<TEntity> = Request & { resource: TEntity }
 
@@ -61,7 +37,7 @@ export type ConfigModule = {
     store_cors?: string
     admin_cors?: string
   }
-  services?: Record<string, string>
+  services: Record<string, string>
   featureFlags: Record<string, boolean | string>
   plugins: (
     | {

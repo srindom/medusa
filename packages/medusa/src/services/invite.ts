@@ -2,13 +2,23 @@ import jwt, { JwtPayload } from "jsonwebtoken"
 import { MedusaError } from "medusa-core-utils"
 import { BaseService } from "medusa-interfaces"
 import { EntityManager } from "typeorm"
-import { EventBusService, UserService } from "."
-import { User } from ".."
-import { UserRoles } from "../models/user"
+import { EventBusService } from "."
+import { UserService } from "../interfaces"
 import { InviteRepository } from "../repositories/invite"
-import { UserRepository } from "../repositories/user"
 import { ListInvite } from "../types/invites"
 import { ConfigModule } from "../types/global"
+
+type User = {
+  id: string
+  name: string
+  email: string
+}
+
+export enum UserRoles {
+  ADMIN = "admin",
+  MEMBER = "member",
+  DEVELOPER = "developer",
+}
 
 // 7 days
 const DEFAULT_VALID_DURATION = 1000 * 60 * 60 * 24 * 7
@@ -16,7 +26,6 @@ const DEFAULT_VALID_DURATION = 1000 * 60 * 60 * 24 * 7
 type InviteServiceProps = {
   manager: EntityManager
   userService: UserService
-  userRepository: UserRepository
   inviteRepository: InviteRepository
   eventBusService: EventBusService
 }
@@ -28,7 +37,6 @@ class InviteService extends BaseService {
 
   private manager_: EntityManager
   private userService_: UserService
-  private userRepo_: UserRepository
   private inviteRepository_: InviteRepository
   private eventBus_: EventBusService
 
@@ -38,7 +46,6 @@ class InviteService extends BaseService {
     {
       manager,
       userService,
-      userRepository,
       inviteRepository,
       eventBusService,
     }: InviteServiceProps,
@@ -53,9 +60,6 @@ class InviteService extends BaseService {
 
     /** @private @constant {UserService} */
     this.userService_ = userService
-
-    /** @private @constant {UserRepository} */
-    this.userRepo_ = userRepository
 
     /** @private @constant {InviteRepository} */
     this.inviteRepository_ = inviteRepository
@@ -74,7 +78,6 @@ class InviteService extends BaseService {
         manager,
         inviteRepository: this.inviteRepository_,
         userService: this.userService_,
-        userRepository: this.userRepo_,
         eventBusService: this.eventBus_,
       },
       this.configModule_
@@ -120,11 +123,12 @@ class InviteService extends BaseService {
       const inviteRepository =
         this.manager_.getCustomRepository(InviteRepository)
 
-      const userRepo = this.manager_.getCustomRepository(UserRepository)
-
-      const userEntity = await userRepo.findOne({
-        where: { email: user },
-      })
+      const userEntity = await this.userService_.retrieveByEmail(
+        user.toLowerCase(),
+        {
+          select: ["id"],
+        }
+      )
 
       if (userEntity) {
         throw new MedusaError(
@@ -136,6 +140,7 @@ class InviteService extends BaseService {
       let invite = await inviteRepository.findOne({
         where: { user_email: user },
       })
+
       // if user is trying to send another invite for the same account + email, but with a different role
       // then change the role on the invite as long as the invite has not been accepted yet
       if (invite && !invite.accepted && invite.role !== role) {
@@ -144,7 +149,7 @@ class InviteService extends BaseService {
         invite = await inviteRepository.save(invite)
       } else if (!invite) {
         // if no invite is found, create a new one
-        const created = await inviteRepository.create({
+        const created = inviteRepository.create({
           role,
           token: "",
           user_email: user,
@@ -214,7 +219,6 @@ class InviteService extends BaseService {
     const { invite_id, user_email } = decoded
 
     return this.atomicPhase_(async (m) => {
-      const userRepo = m.getCustomRepository(this.userRepo_)
       const inviteRepo: InviteRepository = m.getCustomRepository(
         this.inviteRepository_
       )
@@ -229,10 +233,12 @@ class InviteService extends BaseService {
         throw new MedusaError(MedusaError.Types.INVALID_DATA, `Invalid invite`)
       }
 
-      const exists = await userRepo.findOne({
-        where: { email: user_email.toLowerCase() },
-        select: ["id"],
-      })
+      const exists = await this.userService_.retrieveByEmail(
+        user_email.toLowerCase(),
+        {
+          select: ["id"],
+        }
+      )
 
       if (exists) {
         throw new MedusaError(

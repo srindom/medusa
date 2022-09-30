@@ -1,5 +1,5 @@
-import UserService from "../../../../services/user"
 import _ from "lodash"
+import { UserService } from "../../../../interfaces"
 
 /**
  * @oas [get] /auth

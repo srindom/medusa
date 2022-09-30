@@ -1,15 +1,7 @@
-import {
-  BeforeInsert,
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-} from "typeorm"
+import { BeforeInsert, Column, Entity, Index } from "typeorm"
 
 import { DbAwareColumn } from "../utils/db-aware-column"
 import { SoftDeletableEntity } from "../interfaces/models/soft-deletable-entity"
-import { User } from "./user"
 import { generateEntityId } from "../utils/generate-entity-id"
 
 @Entity()
@@ -27,10 +19,6 @@ export class Note extends SoftDeletableEntity {
 
   @Column({ nullable: true })
   author_id: string
-
-  @ManyToOne(() => User)
-  @JoinColumn({ name: "author_id" })
-  author: User
 
   @DbAwareColumn({ type: "jsonb", nullable: true })
   metadata: Record<string, unknown>

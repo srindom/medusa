@@ -56,6 +56,7 @@ export default (rootDirectory: string): ConfigModule => {
       cookie_secret: cookie_secret ?? "supersecret",
       ...configModule?.projectConfig,
     },
+    services: configModule?.services,
     featureFlags: configModule?.featureFlags ?? {},
     plugins: configModule?.plugins ?? [],
   }

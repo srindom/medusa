@@ -1,6 +1,11 @@
 import { Note } from "../models/note"
-import { User } from "../models/user"
 import { PartialPick } from "./common"
+
+type User = {
+  id: string
+  name: string
+  email: string
+}
 
 export interface CreateNoteInput {
   value: string

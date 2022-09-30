@@ -1,7 +1,13 @@
 import { Router } from "express"
-import { User } from "../../../.."
 import { DeleteResponse } from "../../../../types/common"
 import middlewares from "../../../middlewares"
+
+type User = {
+  id: string
+  name: string
+  email: string
+  password_hash: string
+}
 
 export const unauthenticatedUserRoutes = (app) => {
   const route = Router()

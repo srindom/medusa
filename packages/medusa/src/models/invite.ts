@@ -2,8 +2,13 @@ import { BeforeInsert, Column, CreateDateColumn, Entity, Index } from "typeorm"
 import { DbAwareColumn, resolveDbType } from "../utils/db-aware-column"
 
 import { SoftDeletableEntity } from "../interfaces/models/soft-deletable-entity"
-import { UserRoles } from "./user"
 import { generateEntityId } from "../utils/generate-entity-id"
+
+enum UserRoles {
+  ADMIN = "admin",
+  MEMBER = "member",
+  DEVELOPER = "developer",
+}
 
 @Entity()
 export class Invite extends SoftDeletableEntity {
@@ -11,19 +16,13 @@ export class Invite extends SoftDeletableEntity {
   @Column()
   user_email: string
 
-  @DbAwareColumn({
-    type: "enum",
-    enum: UserRoles,
-    nullable: true,
-    default: UserRoles.MEMBER,
-  })
-  role: UserRoles
-
   @Column({ default: false })
   accepted: boolean
 
   @Column()
   token: string
+
+  role: UserRoles
 
   @CreateDateColumn({ type: resolveDbType("timestamptz") })
   expires_at: Date
@@ -89,4 +88,3 @@ export class Invite extends SoftDeletableEntity {
  *     description: An optional key-value map with additional details
  *     example: {car: "white"}
  */
-

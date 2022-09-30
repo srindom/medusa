@@ -83,7 +83,7 @@ const t = async function ({ directory, migrate, seedFile }) {
       if (pass) {
         delete u.password
       }
-      await userService.withTransaction(tx).create(u, pass)
+      await userService.create(u, pass)
     }
 
     const regionIds = {}
